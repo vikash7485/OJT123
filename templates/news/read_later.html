@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}Read Later - News Aggregator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #e9ecef;
+    }
+    
+    .page-header h2 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+    
+    .page-header p {
+        font-size: 16px;
+        color: #6c757d;
+        margin: 0;
+    }
+    
+    .articles-list {
+        display: grid;
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+    
+    .article-item {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 25px;
+        display: flex;
+        gap: 25px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .article-item:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        border-color: #667eea;
+        transform: translateY(-4px);
+    }
+    
+    .article-image-small {
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        flex-shrink: 0;
+        border: 2px solid #e9ecef;
+    }
+    
+    .article-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .article-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        letter-spacing: -0.3px;
+    }
+    
+    .article-title a {
+        color: #212529;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .article-title a:hover {
+        color: #667eea;
+    }
+    
+    .article-description {
+        color: #495057;
+        font-size: 15px;
+        line-height: 1.7;
+        margin-bottom: 18px;
+        flex: 1;
+    }
+    
+    .article-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 18px;
+        font-weight: 500;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .article-meta div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .article-category {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+    }
+    
+    .article-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: auto;
+    }
+    
+    .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: 2px solid #dc3545;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+    
+    .remove-btn:hover {
+        background: #c82333;
+        border-color: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .empty-state h3 {
+        color: #495057;
+        margin-bottom: 15px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+    
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 50px;
+        flex-wrap: wrap;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 12px 18px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #495057;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s;
+        min-width: 44px;
+        text-align: center;
+    }
+    
+    .pagination a:hover {
+        background: #f8f9fa;
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .pagination .current {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .stats-info {
+        background: #e7f3ff;
+        border-left: 4px solid #2196F3;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        font-size: 14px;
+        color: #0d47a1;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>📚 Read Later</h2>
+    <p>Your saved articles for later reading</p>
+</div>
+
+{% if read_later_items %}
+<div class="stats-info">
+    You have {{ read_later_items.paginator.count }} saved article{{ read_later_items.paginator.count|pluralize }}
+    {% if read_later_items.paginator.count > 0 %}
+        • Showing {{ read_later_items.start_index }} - {{ read_later_items.end_index }}
+    {% endif %}
+</div>
+{% endif %}
+
+{% if read_later_items %}
+    <div class="articles-list">
+        {% for item in read_later_items %}
+            <div class="article-item">
+                {% if item.article.url_to_image %}
+                    <img src="{{ item.article.url_to_image }}" alt="{{ item.article.title }}" 
+                         class="article-image-small" onerror="this.style.display='none'">
+                {% endif %}
+                <div class="article-details">
+                    <h3 class="article-title">
+                        <a href="{{ item.article.url }}" target="_blank">{{ item.article.title }}</a>
+                    </h3>
+                    {% if item.article.description %}
+                        <p class="article-description">{{ item.article.description|truncatewords:30 }}</p>
+                    {% endif %}
+                    <div class="article-meta">
+                        <div>
+                            <span>{{ item.article.source|default:"Unknown Source" }}</span>
+                            <span style="margin: 0 10px;">•</span>
+                            <span>{{ item.article.published_at|date:"M d, Y" }}</span>
+                            <span style="margin: 0 10px;">•</span>
+                            <span>Saved {{ item.added_at|date:"M d, Y" }}</span>
+                        </div>
+                        {% if item.article.category %}
+                            <span class="article-category">{{ item.article.category.name }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="article-actions">
+                        <a href="{{ item.article.url }}" target="_blank" class="btn">Read Article</a>
+                        <button class="remove-btn" onclick="removeFromReadLater({{ item.article.id }}, this)">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="pagination">
+        {% if read_later_items.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ read_later_items.previous_page_number }}">Previous</a>
+        {% endif %}
+        
+        <span class="current">
+            Page {{ read_later_items.number }} of {{ read_later_items.paginator.num_pages }}
+        </span>
+        
+        {% if read_later_items.has_next %}
+            <a href="?page={{ read_later_items.next_page_number }}">Next</a>
+            <a href="?page={{ read_later_items.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <h3>No saved articles yet</h3>
+        <p>Start saving articles to read them later!</p>
+        <a href="{% url 'news_list' %}" class="btn">Browse News</a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function removeFromReadLater(articleId, button) {
+        fetch('{% url "toggle_read_later" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ article_id: articleId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'removed') {
+                button.closest('.article-item').style.transition = 'opacity 0.3s';
+                button.closest('.article-item').style.opacity = '0';
+                setTimeout(() => {
+                    button.closest('.article-item').remove();
+                    if (document.querySelectorAll('.article-item').length === 0) {
+                        location.reload();
+                    }
+                }, 300);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+</script>
+{% endblock %}
+

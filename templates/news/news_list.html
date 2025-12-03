@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+
+{% block title %}News - News Aggregator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #e9ecef;
+    }
+    
+    .page-header h2 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+    
+    .page-header p {
+        font-size: 16px;
+        color: #6c757d;
+        margin: 0;
+    }
+    
+    .fetch-news-section {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border: 2px solid #ffc107;
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 35px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+    }
+    
+    .fetch-news-section h3 {
+        margin-bottom: 12px;
+        color: #856404;
+        font-size: 22px;
+        font-weight: 700;
+    }
+    
+    .fetch-news-section p {
+        color: #856404;
+        margin-bottom: 20px;
+        font-size: 15px;
+        font-weight: 500;
+    }
+    
+    .filters {
+        background: #f8f9fa;
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 35px;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        border: 2px solid #e9ecef;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .filter-group label {
+        font-weight: 600;
+        color: #212529;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    select, input[type="text"] {
+        padding: 12px 16px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s;
+        background: white;
+        color: #212529;
+        font-family: inherit;
+    }
+    
+    select:focus, input[type="text"]:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .article-card {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .article-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        border-color: #667eea;
+    }
+    
+    .article-image {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        display: block;
+    }
+    
+    .article-content {
+        padding: 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .article-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 12px;
+        font-weight: 500;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .article-meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .article-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        letter-spacing: -0.3px;
+    }
+    
+    .article-description {
+        color: #495057;
+        font-size: 15px;
+        line-height: 1.7;
+        margin-bottom: 18px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex: 1;
+    }
+    
+    .article-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .article-category {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+    }
+    
+    .read-later-btn {
+        background: #f8f9fa;
+        border: 2px solid #dee2e6;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s;
+        color: #495057;
+    }
+    
+    .read-later-btn:hover {
+        background: #e9ecef;
+        border-color: #adb5bd;
+        transform: translateY(-2px);
+    }
+    
+    .read-later-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 50px;
+        flex-wrap: wrap;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 12px 18px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #495057;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s;
+        min-width: 44px;
+        text-align: center;
+    }
+    
+    .pagination a:hover {
+        background: #f8f9fa;
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .pagination .current {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .empty-state h2 {
+        color: #495057;
+        margin-bottom: 15px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+    
+    .empty-state p {
+        color: #6c757d;
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+    
+    .stats-info {
+        background: #e7f3ff;
+        border-left: 4px solid #2196F3;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        font-size: 14px;
+        color: #0d47a1;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>📰 Latest News</h2>
+    <p>Stay updated with the latest articles from around the world</p>
+</div>
+
+{% if user.is_authenticated %}
+<div class="fetch-news-section">
+    <h3>📥 Fetch Latest News</h3>
+    <p>Click the button below to fetch the latest news from NewsAPI and RSS feeds.</p>
+    <form method="post" action="{% url 'fetch_news' %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn">Fetch News</button>
+    </form>
+</div>
+{% endif %}
+
+{% if articles %}
+<div class="stats-info">
+    Showing {{ articles.start_index }} - {{ articles.end_index }} of {{ articles.paginator.count }} articles
+    {% if selected_category %} • Filtered by: <strong>{{ selected_category|title }}</strong>{% endif %}
+    {% if search_query %} • Search: <strong>"{{ search_query }}"</strong>{% endif %}
+</div>
+{% endif %}
+
+<div class="filters">
+    <div class="filter-group">
+        <label for="category">📂 Filter by Category</label>
+        <select id="category">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label for="search">🔍 Search Articles</label>
+        <input type="text" id="search" placeholder="Enter keywords..." value="{{ search_query }}" 
+               onkeyup="if(event.key === 'Enter') filterNews()">
+    </div>
+    
+    <div class="filter-group" style="flex: 0 0 auto;">
+        <label style="opacity: 0;">Actions</label>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="filterNews()" class="btn">Apply Filters</button>
+            {% if selected_category or search_query %}
+                <a href="{% url 'news_list' %}" class="btn btn-secondary">Clear</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if articles %}
+    <div class="articles-grid">
+        {% for article in articles %}
+            <div class="article-card" onclick="window.open('{{ article.url }}', '_blank')">
+                {% if article.url_to_image %}
+                    <img src="{{ article.url_to_image }}" alt="{{ article.title }}" class="article-image" 
+                         onerror="this.style.display='none'">
+                {% endif %}
+                <div class="article-content">
+                    <div class="article-meta">
+                        <span>{{ article.source|default:"Unknown Source" }}</span>
+                        <span>{{ article.published_at|date:"M d, Y" }}</span>
+                    </div>
+                    <h3 class="article-title">{{ article.title }}</h3>
+                    {% if article.description %}
+                        <p class="article-description">{{ article.description }}</p>
+                    {% endif %}
+                    <div class="article-actions">
+                        {% if article.category %}
+                            <span class="article-category">{{ article.category.name }}</span>
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                            <button class="read-later-btn {% if article.id in read_later_ids %}active{% endif %}" 
+                                    onclick="event.stopPropagation(); toggleReadLater({{ article.id }}, this)">
+                                {% if article.id in read_later_ids %}✓ Saved{% else %}Save{% endif %}
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="pagination">
+        {% if articles.has_previous %}
+            <a href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
+            <a href="?page={{ articles.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+        {% endif %}
+        
+        <span class="current">
+            Page {{ articles.number }} of {{ articles.paginator.num_pages }}
+        </span>
+        
+        {% if articles.has_next %}
+            <a href="?page={{ articles.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+            <a href="?page={{ articles.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
+        {% endif %}
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <h2 style="color: #666; margin-bottom: 20px;">No articles found</h2>
+        <p style="color: #999;">Try adjusting your filters or fetch news to get started.</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterNews() {
+        const category = document.getElementById('category').value;
+        const search = document.getElementById('search').value;
+        let url = '{% url "news_list" %}?';
+        
+        if (category) {
+            url += 'category=' + encodeURIComponent(category) + '&';
+        }
+        if (search) {
+            url += 'search=' + encodeURIComponent(search) + '&';
+        }
+        
+        window.location.href = url.replace(/&$/, '');
+    }
+    
+    function toggleReadLater(articleId, button) {
+        fetch('{% url "toggle_read_later" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ article_id: articleId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'added') {
+                button.textContent = '✓ Saved';
+                button.classList.add('active');
+            } else if (data.status === 'removed') {
+                button.textContent = 'Save';
+                button.classList.remove('active');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+</script>
+{% endblock %}
+
