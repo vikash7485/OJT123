@@ -1,0 +1,284 @@
+OJT Backend Developer Learning – 24th November 2025
+
+Python Fundamentals Learned Today
+
+Topics Covered:
+1.Modules and pip
+
+2.File Handling
+
+3.Exception Handling
+
+4.Finally Keyword
+
+1. Modules and pip
+What are Modules?
+A module is a file containing Python code (functions, variables) that we can use in other programs.
+
+Example Module: harry.py
+
+python
+def greet(name):
+    print(f"Good morning, {name}")
+
+harry = "Harry"
+Using the Module:
+
+python
+import harry
+
+harry.greet("Raj")
+print(harry.harry)
+Using pip (Package Installer for Python)
+pip is used to install external modules/packages.
+
+Basic pip commands:
+
+bash
+# Install a package
+pip install pandas
+
+# Check installed packages
+pip list
+Example: Installing pandas
+
+bash
+pip install pandas
+Using pandas after installation:
+
+python
+import pandas
+
+# Now we can use pandas functions
+How This Helps in News Aggregator Project
+In our Django project, we need to install packages like:
+
+Django (web framework)
+
+feedparser (to read RSS feeds)
+
+requests (to fetch data from internet)
+
+We install them using pip:
+
+bash
+pip install django
+pip install feedparser
+pip install requests
+2. File Handling
+Reading Files
+Reading entire file:
+
+python
+f = open('myfile.txt', 'r')
+text = f.read()
+print(text)
+f.close()
+Better way using with:
+
+python
+with open('myfile.txt', 'r') as f:
+    text = f.read()
+    print(text)
+Writing to Files
+Write mode (creates new or overwrites):
+
+python
+f = open('myfile2.txt', 'w')
+f.write('Hello World')
+f.close()
+Append mode (adds to end):
+
+python
+f = open('myfile2.txt', 'a')
+f.write('\nNew line added')
+f.close()
+File Modes
+'r' - Read (default)
+
+'w' - Write (overwrites file)
+
+'a' - Append (adds to end)
+
+'x' - Create (error if file exists)
+
+How This Helps in News Aggregator Project
+Storing logs when fetching news:
+
+python
+# Log which news sources we fetched
+f = open('news_log.txt', 'a')
+f.write('Fetched news from BBC\n')
+f.close()
+Reading configuration:
+
+python
+# Read API key from file
+with open('config.txt', 'r') as f:
+    api_key = f.read()
+3. Exception Handling
+Why Exception Handling?
+Programs crash when errors occur. Exception handling prevents crashes.
+
+Basic Syntax
+python
+try:
+    # Code that might cause error
+    a = int(input("Enter number: "))
+    print(a)
+except:
+    print("Invalid input")
+Handling Specific Errors
+python
+try:
+    num = int(input("Enter a number: "))
+    print(num)
+except ValueError:
+    print("Please enter a valid number")
+Multiple Exception Types
+python
+try:
+    a = int(input("Enter number: "))
+    print(a)
+except ValueError:
+    print("Number entered is not an integer")
+except Exception as e:
+    print(f"Error: {e}")
+How This Helps in News Aggregator Project
+When fetching news from internet:
+
+python
+import feedparser
+
+try:
+    # Try to fetch news
+    feed = feedparser.parse('http://feeds.bbci.co.uk/news/rss.xml')
+    print("News fetched successfully")
+except:
+    print("Could not fetch news. Check internet connection.")
+When saving to database:
+
+python
+try:
+    # Save article to database
+    News.objects.create(title="Article Title")
+    print("Article saved")
+except:
+    print("Error saving article")
+Handling missing data:
+
+python
+try:
+    article_title = entry.title
+    article_link = entry.link
+except:
+    print("Article is missing some information")
+4. Finally Keyword
+What is finally?
+Code in finally block always runs, whether error happens or not.
+
+Basic Example
+python
+try:
+    a = int(input("Enter number: "))
+    print(a)
+except ValueError:
+    print("Invalid number")
+finally:
+    print("This always runs")
+Practical Use - Closing Files
+python
+f = open('myfile.txt', 'r')
+try:
+    content = f.read()
+    print(content)
+except:
+    print("Error reading file")
+finally:
+    f.close()
+    print("File closed")
+How This Helps in News Aggregator Project
+Ensuring log file always closes:
+
+python
+log_file = open('news_log.txt', 'a')
+
+try:
+    # Fetch news
+    feed = feedparser.parse('http://feeds.bbci.co.uk/news/rss.xml')
+    log_file.write('Successfully fetched news\n')
+except:
+    log_file.write('Failed to fetch news\n')
+finally:
+    log_file.close()  # Always closes file
+    print("Log file closed")
+Ensuring cleanup always happens:
+
+python
+try:
+    # Process news articles
+    process_articles()
+except Exception as e:
+    print(f"Error: {e}")
+finally:
+    print("Cleanup completed")
+Summary
+What I Learned Today:
+1. Modules and pip:
+
+✅ Modules are Python files we can import and reuse
+
+✅ pip is used to install external packages
+
+✅ Command: pip install package_name
+
+2. File Handling:
+
+✅ Read files using open('file.txt', 'r')
+
+✅ Write files using open('file.txt', 'w')
+
+✅ Append to files using open('file.txt', 'a')
+
+✅ Better to use with open() syntax
+
+3. Exception Handling:
+
+✅ Use try-except to prevent program crashes
+
+✅ Can handle specific errors (ValueError, etc.)
+
+✅ Use except Exception as e to see error message
+
+4. Finally Keyword:
+
+✅ Code in finally always executes
+
+✅ Used to close files and cleanup
+
+✅ Runs even if error occurs
+
+Why This Matters for News Aggregator Project:
+pip → Install Django, feedparser, requests packages
+
+File Handling → Store logs, read config files, save data
+
+Exception Handling → Prevent crashes when:
+
+Internet connection fails
+
+RSS feed is unavailable
+
+Database errors occur
+
+Missing article data
+
+Finally → Ensure files close properly, cleanup happens
+
+Next Steps:
+
+Start learning Django basics
+
+Apply these Python concepts in Django code
+
+Practice error handling in real project
